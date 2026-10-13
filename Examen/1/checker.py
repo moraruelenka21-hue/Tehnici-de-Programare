@@ -44,7 +44,7 @@ def is_https(url):
 def show_response(url):
     """Trimite un GET la url și afișează statusul și Content-Type."""
     try:
-        response = requests.get(url, timeout=3)
+        response = requests.get(url, timeout=5)
         print(f"Status: {response.status_code}")
         print(f"Content-Type: {response.headers.get('Content-Type', 'indisponibil')}")
     except requests.RequestException as error:
@@ -54,53 +54,58 @@ def show_response(url):
 def check_site(url):
     """Returnează un dicționar cu: status, content_type, length, server."""
     try:
-        response = requests.get(url, timeout=3)
+        response = requests.get(url, timeout=5)
         return {
             "status": response.status_code,
             "content_type": response.headers.get("Content-Type", ""),
             "length": len(response.content),
-            "server": response.headers.get("Server", ""),
+            "server": response.headers.get("Server", "unknown"),
         }
-    except requests.RequestException:
+    except requests.RequestException as error:
         return {
             "status": None,
-            "content_type": "",
-            "length": 0,
-            "server": "",
+            "error": str(error),
         }
 
 
 def scan_sites():
     """Verifică toate site-urile din SITES, afișează-le pe cele care merg și un rezumat."""
-    working = 0
-    failed = 0
-
+    results = []
     for url in SITES:
         result = check_site(url)
+        result["url"] = url
+        results.append(result)
 
-        if result["status"] is not None and result["status"] < 400:
+    results.sort(key=lambda result: result.get("length", 0), reverse=True)
+    working = 0
+
+    for result in results:
+        if result["status"] == 200:
             working += 1
-            print(f"{url} - OK ({result['status']})")
-        else:
-            failed += 1
-            print(f"{url} - Eroare ({result['status']})")
+            print(f"{result['url']} -> 200, {result['length']} octeti")
 
-    print(f"\nSite-uri functionale: {working}")
-    print(f"Site-uri cu erori: {failed}")
+    failed = len(results) - working
+    print(f"Reusite: {working} | Esuate: {failed}")
 
 
 def check_headers(url):
     """Returnează un dicționar cu: present, missing, score."""
     try:
-        response = requests.get(url, timeout=3)
+        response = requests.get(url, timeout=5)
+        response_header_names = {
+            name.lower()
+            for name in response.headers
+        }
         present = [
             header
             for header in SECURITY_HEADERS
-            if header in response.headers
+            if header.lower() in response_header_names
         ]
     except requests.RequestException as error:
-        print(f"Eroare la verificarea antetelor: {error}")
-        present = []
+        return {
+            "status": None,
+            "error": str(error),
+        }
 
     missing = [
         header
@@ -121,18 +126,23 @@ def retry_check(url, attempts=3):
     status = None
     attempts_made = 0
 
-    for attempt in range(attempts):
+    for _ in range(attempts):
         attempts_made += 1
 
         try:
-            response = requests.get(url, timeout=3)
+            response = requests.get(url, timeout=5)
             status = response.status_code
 
-            if status < 400:
+            if status < 500:
                 break
         except requests.RequestException as error:
             status = None
-            print(f"Eroare la incercarea {attempts_made}: {error}")
+            if attempts_made == attempts:
+                return {
+                    "status": None,
+                    "error": str(error),
+                    "attempts": attempts_made,
+                }
 
     return {
         "status": status,
