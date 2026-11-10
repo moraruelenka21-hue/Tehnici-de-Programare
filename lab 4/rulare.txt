@@ -1,4 +1,0 @@
-Fișierele 01–21 sunt exercițiile LearnPython. Exemplu:
-  python 01_Hello_World.py
-
-Fișierele Kids_1.py–Kids_7.py se rulează în Coding for Kids, unde este disponibil modulul player.

@@ -1,6 +1,0 @@
-În mașina virtuală Ubuntu, pentru configurarea rețelei:
-  sudo sh fix_ubuntu_network.sh
-
-Pentru verificare, rulează scriptul corespunzător în fiecare VM:
-  Ubuntu: sudo sh ubuntu_evidence.sh
-  Kali:   sudo sh kali_evidence.sh
