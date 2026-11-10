@@ -5,7 +5,7 @@ from pathlib import Path
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-BAZA = Path(__file__).resolve().parents[2]
+BAZA = Path(__file__).resolve().parents[2] / "probe"
 AICI = Path(__file__).resolve().parent
 
 # B1. Tipul real al fișierului

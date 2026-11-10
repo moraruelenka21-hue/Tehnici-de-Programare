@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from urllib.parse import unquote
 
-BAZA = Path(__file__).resolve().parents[2]
+BAZA = Path(__file__).resolve().parents[2] / "probe"
 AICI = Path(__file__).resolve().parent
 
 # A2. Recunoașterea codării

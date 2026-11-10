@@ -1,4 +1,9 @@
-# Generator pentru fisierele de intrare. Necesita Pillow.
+# -*- coding: utf-8 -*-
+# Tehnici de programare, Sesiunea 6 - generatorul tintelor de laborator.
+# Se pune in depozitul de start al studentului ca  probe/pregateste.py  si se ruleaza o data:
+#     python probe/pregateste.py
+# Produce, in acelasi folder probe/, fisierele pe care le analizeaza laboratorul.
+# Depinde doar de Pillow (pip install pillow). Nu atinge nimic din afara folderului probe/.
 
 import os
 import base64
@@ -71,4 +76,4 @@ scrie("challenge_hint.txt",
       "Un strat de base64 peste un XOR cu cheie de un octet. "
       "Verificare: md5 al textului clar = " + hashlib.md5(b"FLAG{lant_complet_despicat}").hexdigest() + "\n")
 
-print("Gata. Fisierele de intrare sunt in:", HERE)
+print("Gata. Tintele de laborator sunt in:", HERE)
