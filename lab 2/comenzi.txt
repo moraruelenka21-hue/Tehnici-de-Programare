@@ -1,0 +1,8 @@
+Comenzi din exercițiile pwn.college
+
+Challenge Programs
+  /challenge/solve
+
+The Flag File
+  /challenge/solve
+  cat /flag

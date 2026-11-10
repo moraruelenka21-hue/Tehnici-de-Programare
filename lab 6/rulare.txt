@@ -1,0 +1,6 @@
+python -m pip install -r requirements.txt
+python decode.py U2FsdXQ=
+python partea2.py
+python teste/test_decode.py
+
+Probele sunt incluse. Rezultatele se salvează în arsenal/forensics.
