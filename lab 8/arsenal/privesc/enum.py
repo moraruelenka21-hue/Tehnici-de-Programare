@@ -20,6 +20,11 @@ def nume(cale):
     return cale.rsplit("/", 1)[-1]
 
 
+def nume_unice(cale):
+    """Intoarce multimea numelor distincte din fisierul SUID."""
+    return {nume(c) for c in citeste_linii(cale)}
+
+
 def suid_constatari(cale):
     """O fisa pentru fiecare cale unica, in ordine determinista."""
     return [{"cale": c, "nume": nume(c),
