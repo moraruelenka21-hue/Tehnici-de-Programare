@@ -4,7 +4,7 @@ import hashlib
 import argparse
 import json
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote_to_bytes
 
 BAZA = Path(__file__).resolve().parents[2] / "probe"
 AICI = Path(__file__).resolve().parent
@@ -23,7 +23,7 @@ def ghici_strat(s):
 def desfa(s):
     strat = ghici_strat(s)
     if strat == "url":
-        return strat, unquote(s).encode()
+        return strat, unquote_to_bytes(s)
     if strat == "hex":
         return strat, bytes.fromhex(s)
     if strat == "base64":
@@ -32,13 +32,22 @@ def desfa(s):
 
 # A4. Desfacerea straturilor succesive
 def decodeaza(text):
+    if isinstance(text, bytes):
+        try:
+            text = text.decode().strip()
+        except UnicodeDecodeError:
+            return [], text
+
     straturi = []
     for _ in range(8):
         strat, date = desfa(text)
         if strat == "necunoscut":
             break
-        text = date.decode()
         straturi.append(strat)
+        try:
+            text = date.decode()
+        except UnicodeDecodeError:
+            return straturi, date
     return straturi, text
 
 def citibil(date):
@@ -103,9 +112,12 @@ def main():
         print("A7")
         text = a.intrare
         if a.fisier:
-            text = Path(a.intrare).read_text().strip()
+            text = Path(a.intrare).read_bytes()
         straturi, rezultat = decodeaza(text)
         fisa = {"strat": straturi, "rezultat": rezultat}
+        if isinstance(rezultat, bytes):
+            fisa["rezultat"] = rezultat.hex()
+            fisa["format"] = "hex"
         with open(AICI / "fisa.json", "w", encoding="utf-8") as f:
             json.dump(fisa, f, ensure_ascii=False, indent=4)
         print(json.dumps(fisa, ensure_ascii=False, indent=4))
